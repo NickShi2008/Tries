@@ -58,25 +58,59 @@ namespace Tries
 
         private TrieNode SearchNodeHelper(TrieNode head, string word)
         {
-            if(head.Children.Count == 0)
+            TrieNode searched = new TrieNode('$');
+
+            if ((head.Children.Count > 0) && word.Length > 0)
             {
-                return head;
+                if (head.Children.ContainsKey(word[0]))
+                {
+                    searched.Children.Add(word[0], SearchNodeHelper(head.Children[word[0]], word.Substring(1)));
+                }
+                else if (!head.Children.ContainsKey(word[0]))
+                {
+                    return null;
+                }
             }
-            if (!head.Children.ContainsKey(word[0]))
-            {
-                throw new NullReferenceException("not in dictionary");
-            }
-            return SearchNodeHelper(head.Children[word[0]], word.Substring(1));
+
+            return searched;
         }
 
         public List<string> GetAllMatchingPrefix(string prefix)
         {
-            return default(List<string>);
+            List<string> matches = new List<string>();
+
+            TrieNode node = SearchNode(prefix);
+
+            MatchHelper(matches, node, prefix);
+
+            return matches;
+        }
+
+        public void MatchHelper(List<string> matches, TrieNode node, string prefix)
+        {
+            foreach ((char letter, TrieNode trieNode) in node.Children)
+            {
+                MatchHelper(matches, trieNode, prefix + trieNode.Letter);
+            }
+
+            if (node.IsWord)
+            {
+                matches.Add(prefix);
+            }
         }
 
         public bool Remove(string prefix)
         {
-            return false;
+            
+            TrieNode remove = SearchNode(prefix);
+
+            if (remove == null || prefix.Length == 0)
+            {
+                return false;
+            }
+
+            remove.IsWord = false;
+            return true;
         }
 
     }
