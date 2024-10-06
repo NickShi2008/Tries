@@ -8,7 +8,7 @@ namespace Tries
 {
     public class TrieNode
     {
-        public char Letter { get; private set; }
+        public char Letter { get; set; }
         public Dictionary<char, TrieNode> Children { get; private set; }
         public bool IsWord { get; set; }
 
